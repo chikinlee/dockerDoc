@@ -321,25 +321,25 @@ CMD ["start"]
 - 通过`FROM`指定镜像，可以是任意有效的基础镜像
 - 在 Dockerfile 中创建多个镜像时，`FROM`可以出现多次，但是每次有一个新的`FROM`之前，一定要提交上次的镜像 ID，特别注意的，17.05 之前的版本是不可以多个`FROM`的
 
-- tag或digest是可选的，如果不使用这两个，会默认使用latest版本
+- tag 或 digest 是可选的，如果不使用这两个，会默认使用 latest 版本
 
 #### RUN
 
-##### shell执行
+##### shell 执行
 
 `RUN <command>`
 
-会在shell执行命令，Linux下默认使用/bin/sh -c， Windows下使用cmd /S /C
+会在 shell 执行命令，Linux 下默认使用/bin/sh -c， Windows 下使用 cmd /S /C
 
-SHELL会修改RUN下所使用的默认shell
+SHELL 会修改 RUN 下所使用的默认 shell
 
-##### exec执行
+##### exec 执行
 
 `RUN ["executable","param1","param2"]`
 
-RUN可以执行任何命令，然后在当前镜像上创建一个新层并提交，提交后的结果镜像将会用在Dockerfile文件的下一步
+RUN 可以执行任何命令，然后在当前镜像上创建一个新层并提交，提交后的结果镜像将会用在 Dockerfile 文件的下一步
 
-通过RUN执行多条命令时，可以通过`\`换行
+通过 RUN 执行多条命令时，可以通过 `\`换行
 
 ```bash
 RUN /bin/bash -c 'source $HOME/.bashrc;\
@@ -352,15 +352,14 @@ echo $HOME'
 RUN /bin/bash -c 'source $HOME/.bashrc;echo $HOME'
 ```
 
-RUN指令创建的中间镜像会被缓存，并会在下次构建中使用。如果不想使用这些缓存镜像，可以在构建时指定`--no-cache`参数，如：`docker build --no-cache`。
+RUN 指令创建的中间镜像会被缓存，并会在下次构建中使用。如果不想使用这些缓存镜像，可以在构建时指定`--no-cache`参数，如：`docker build --no-cache`。
 
 #### CMD
 
-CMD用于指定在容器启动时所要执行的命令，CMD有三种格式
+CMD 用于指定在容器启动时所要执行的命令，CMD 有三种格式
 
 ```bash
 CMD ["executable","param1","param2"]
 CMD ["param1", "param2"]
 CMD command param1 param2
 ```
-
