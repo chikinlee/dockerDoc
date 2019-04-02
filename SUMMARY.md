@@ -402,4 +402,99 @@ sudo docker run -i -t  85ido/85node
 sudo docker run -i -t  85ido/85node /bin/ps
 ```
 
-这时结尾的/bin/ps 就会覆盖CMD的/bin/bash
+这时结尾的/bin/ps 就会覆盖CMD的/bin/bash命令
+
+#### ENTRYPOINT
+
+`ENTRYPOINT`用于给容器配置一个可执行程序，也就是说每次使用镜像创建容器时，`ENTRYPOINT`指定的程序都会被设置为默认程序。
+
+```bash
+ENTRYPOINT ["executable","param1","param2"]
+ENTRYPOINT command param1 param2
+```
+
+和CMD很类似，但是通过docker run执行的命令不会覆盖ENTRYPOINT，而docker run指定的任何参数，都会被当作参数传给ENTRYPOINT，dockerfile只允许有一个ENTRYPOINT命令，多次ENTRYPOINT只会执行最后的ENTRYPOINT命令
+
+例：
+
+```bash
+ENTRYPOINT ["/usr/bin/nginx"]
+```
+
+执行`docker build`构建完成镜像后，名如果是` 85ido/85node`，使用这个镜像运行新容器
+
+```bash
+sudo docker run -i -t 85ido/85node -g 'daemon off;'
+```
+
+执行`docker run`时，使用了`-g 'daemon off'`,这个参数会传递给ENTRYPOINT，最终执行为`/usr/sbin/nginx -g "daemon off;"`
+
+#### LABEL
+
+`LABEL`用于为镜像添加元数据，元数以键值对的形式指定：
+
+```bash
+LABEL <key>=<value> <key>=<value> <key>=<value> ...
+```
+
+使用`LABEL`指定元数据时，一条`LABEL`指定可以指定一或多条元数据，指定多条元数据时不同元数据之间通过空格分隔。推荐将所有的元数据通过一条`LABEL`指令指定，以免生成过多的中间镜像。
+
+如，通过`LABEL`指定一些元数据：
+
+```bash
+LABEL version="1.0" description="这是85前端" by="chikinlee"
+```
+
+指定后可以通过`docker inspect`查看：
+
+![image-20190402183212993](./img/image-20190402183212993.png)
+
+*注意；*`Dockerfile`中还有个`MAINTAINER`命令，该命令用于指定镜像作者。但`MAINTAINER`并不推荐使用，更推荐使用`LABEL`来指定镜像作者。如：
+
+```bash
+LABEL maintainer="chikinlee"
+```
+
+#### EXPOSE
+
+`EXPOSE`用于指定容器运行时监听的端口
+
+```bash
+EXPOSE <port> [<port>...]
+```
+
+`EXPOSE`并不会让容器的端口访问到主机。要使其可访问，需要在`docker run`运行容器时通过`-p`来发布这些端口，或通过`-P`(随机端口映射)参数来发布`EXPOSE`导出的所有端口。
+
+-p(小写) -p ip地址:宿主机端口:docker端口 可多次使用-p绑定多个端口ip地址可选，ip地址输入的情况下本地端口未声明则为默认
+
+`docker port <docker名>`可查询当前映射的端口配置，也可以查看绑定的地址
+
+![image-20190402180551922](./img/image-20190402180551922.png)
+
+#### ENV
+
+`ENV`用于设置环境变量,以下两种方式
+
+```bash
+ENV <key> <value>
+ENV <key>=<value> <key>=<value> <key>=<value> ...
+```
+
+例
+
+```bash
+ENV NODE_ENV 'prod'
+```
+
+设置后可在这个命令后都可以使用，`$+变量名`
+
+```bash
+WORKERDIR $NODE_ENV
+```
+
+还可以在创建后的容器中使用
+
+![image-20190402182948972](./img/image-20190402182948972.png)
+
+
+
