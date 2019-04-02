@@ -363,3 +363,43 @@ CMD ["executable","param1","param2"]
 CMD ["param1", "param2"]
 CMD command param1 param2
 ```
+
+CMD不同于RUN，CMD用于指定容器启动时所要执行的命令，而RUN用于指定镜像创建时所要执行的命令。
+
+CMD和docker run在功能实现上也有相似之处
+
+```bash
+docker run -t -i 85ido/85node /bin/true
+```
+
+等价于：
+
+```bash
+cmd ["/bin/true"]
+```
+
+CMD在dockerfile中只可以指定一次，多次会覆盖之前的指令
+
+使用`docker run`运行容器时，如果没有在命令结尾指定会在容器中执行的命令，这时Docker就会执行在`Dockerfile`的`CMD`中指定的命令。
+
+例：
+
+```bash
+CMD ["/bin/bash"]
+```
+
+执行`docker build`构建完成镜像后，名如果是` 85ido/85node`，使用这个镜像运行新容器
+
+```bash
+sudo docker run -i -t  85ido/85node
+```
+
+在`docker run`时，并没有指定命令，这时就会执行dockerfile中的CMD指令
+
+如果想要覆盖
+
+```bash
+sudo docker run -i -t  85ido/85node /bin/ps
+```
+
+这时结尾的/bin/ps 就会覆盖CMD的/bin/bash
