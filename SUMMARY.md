@@ -451,7 +451,8 @@ LABEL version="1.0" description="这是85前端" by="chikinlee"
 
 *注意；*`Dockerfile`中还有个`MAINTAINER`命令，该命令用于指定镜像作者。但`MAINTAINER`并不推荐使用，更推荐使用`LABEL`来指定镜像作者。如：
 
-```bash
+```
+bash
 LABEL maintainer="chikinlee"
 ```
 
@@ -496,5 +497,36 @@ WORKERDIR $NODE_ENV
 
 ![image-20190402182948972](./img/image-20190402182948972.png)
 
+#### ADD
 
+`ADD`用于复用构建环境中的文件或目录到镜像中，以下两种方式
+
+```bash
+ADD <src> <dest>
+ADD ["<src>",... "<dest>"]
+```
+
+通过`ADD`复制文件时，需要通过<src>指定源文件位置，然后通过dest指定到目录，src可以是文件、目录或URL,但不能访问构建上下文之外的文件或目录
+
+例
+
+```bash
+ADD	http://wordpress.org/latest.zip /usr/local
+```
+
+**只复制目录中的内容而不包含目录自身**
+
+如果src是个文件，且目标路径以`/`结尾，则拷贝到该目录下，如果没有就新建，
+
+如果不是以`/`结尾且dest是个文件，则docker会当作一个文件，没有就新建，有就覆盖，如果dest(目标文件)是个目录，则会拷贝到该目录下，这种时候最好dest以`/`结尾书写，避免混淆
+
+src如果是个压缩文件，则docker会自动解压
+
+#### COPY
+
+与ADD唯一的不同点时不可以解压，不可以使用URL
+
+再就是COPY命令可作用在multi-stage(多阶段构建)场景下，而ADD不能
+
+即：多个FROM时，COPY可以把之前的FROM指令下的构建产物拷贝到另一个FROM中，也就是另一个镜像
 
